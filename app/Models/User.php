@@ -24,6 +24,10 @@ class User extends Authenticatable implements JWTSubject
         'username',
         'password',
     ];
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -56,5 +60,9 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
     }
 }

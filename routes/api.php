@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\ArticleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,9 +24,14 @@ use App\Http\Controllers\Auth\LogoutController;
 // });
 
 
+Route::get('articles/{article}', [ArticleController::class, 'show']);
 // Route::prefix('api')->group(function () {
 Route::post('register', [RegisterController::class, '__invoke']);
 Route::post('login', [LoginController::class, '__invoke']);
 Route::post('logout', [LogoutController::class, '__invoke']);
 Route::get('user', [UserController::class, '__invoke']);
 // });
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('create-new-article', [ArticleController::class, 'store']);
+});
