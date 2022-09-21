@@ -24,10 +24,7 @@ class User extends Authenticatable implements JWTSubject
         'username',
         'password',
     ];
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+
 
     /**
      * The attributes that should be hidden for serialization.

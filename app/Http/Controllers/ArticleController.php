@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ArticleRequest;
+use App\Http\Resources\ArticleCollection;
 use App\Models\Article;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ArticleResource;
+use Illuminate\Support\Facades\Response;
 
 class ArticleController extends Controller
 {
@@ -18,7 +21,9 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        // gunakan resource collection jika tanpa response jika ada gunakan resoure dengan menghilangkan new hanya ArticleResource::c b                
+        $article = Article::paginate(2);
+        return new ArticleCollection($article);
     }
 
     /**
@@ -27,14 +32,13 @@ class ArticleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ArticleRequest $request)
     {
-        $request->validate([
-            'title' => 'required|min:3|max:255',
-            'body' => 'required',
-            'subject' => 'required'
-        ]);
-
+        // $request->validate([
+        //     'title' => 'required|min:3|max:255',
+        //     'body' => 'required',
+        //     'subject' => 'required'
+        // ]);
 
         $article = Auth::user()->articles()->create([
             'title' => request('title'),
@@ -70,9 +74,10 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ArticleRequest $request, Article $article = null)
     {
-        //
+        $article->update($this->articleStore());
+        return new ArticleResource($article);
     }
 
     /**
@@ -81,8 +86,18 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Article $article = null)
     {
-        //
+        $article->delete();
+        return Response::json('The article was successfully deleted', 200);
+    }
+    public function articleStore()
+    {
+        return [
+            'title' => request('title'),
+            'slug' => Str::slug(request('title')),
+            'body' => request('body'),
+            'subject_id' => request('subject'),
+        ];
     }
 }
